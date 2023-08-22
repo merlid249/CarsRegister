@@ -4,11 +4,11 @@ namespace CarsRegister.Tools
 {
     public class Connection
     {
-        public static string RENTALBOOKIN_URL = "https://bookingcar.azurewebsites.net";
+        public static string RENTALBOOKIN_URL = "xxxxxxxxxxxxxxx
 
-        public static string TOKEN = "Bearer YXNsamRiYWprbHNiZGhqdWFzYmhuZG91YXNpZGhqbmFzaW9kazphc2RrbGFzaG5kbGthc25ka2xhc25ka2xhc25ka2xhc2tsZA";
+        public static string TOKEN = "xxxxxxxxxxxxxxxxxxxxxxxxx";
 
-        internal static string CarListConnection = "Data Source=rentalmerlind.database.windows.net;Initial Catalog=CarList;User ID=merlind249;Password=Merlind123!@#";
+        internal static string CarListConnection = "xxxxxxxxxxxxxxxxxxxxx";
 
     }
 }
