@@ -262,7 +262,7 @@ namespace CarsRegister.Service
         }
         #endregion
 
-        #region Bussines
+        #region Bussiness
         internal static async Task<IEnumerable<Car>> GetYourCars(string ownerId)
         {
             List<Car> carsList = new List<Car>();
@@ -447,6 +447,104 @@ namespace CarsRegister.Service
             }
             return resp;
         }
+        internal static async Task<Car> GetYourCarById(string ownerId, string carId)
+        {
+            Car car = null;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(Connection.CarListConnection))
+                {
+                    await conn.OpenAsync();
+                    string selectQuery = "SELECT * FROM CarList.dbo.Cars WHERE CarId = '" + carId + "' AND OwnerId = '" + ownerId + "'";
+
+                    using (SqlCommand cmd = new SqlCommand(selectQuery, conn))
+                    {
+                        cmd.CommandType = CommandType.Text;
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                car = new Car
+                                {
+                                    CarId = reader["CarId"].ToString(),
+                                    OwnerId = reader["OwnerId"].ToString(),
+                                    Model = reader["Model"].ToString(),
+                                    Make = reader["Make"].ToString(),
+                                    Year = Convert.ToInt32(reader["Year"]),
+                                    Color = reader["Color"].ToString(),
+                                    Mileage = Convert.ToDecimal(reader["Mileage"]),
+                                    Transmission = reader["Transmission"].ToString(),
+                                    FuelType = reader["FuelType"].ToString(),
+                                    Status = reader["Status"].ToString(),
+                                    PricePerDay = Convert.ToDecimal(reader["PricePerDay"]),
+                                    Location = reader["Location"].ToString(),
+                                    ImageUrl = reader["ImageUrl"].ToString(),
+                                    Description = reader["Description"].ToString(),
+                                    CreatedAt = DateTime.Parse(reader["CreatedAt"].ToString()),
+                                    UpdatedAt = DateTime.Parse(reader["UpdatedAt"].ToString())
+                                };
+
+                                if (reader["LastMaintenanceDate"] != DBNull.Value)
+                                {
+                                    car.LastMaintenanceDate = DateTime.Parse(reader["LastMaintenanceDate"].ToString());
+                                }
+                                else
+                                {
+                                    car.LastMaintenanceDate = null;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return car;
+        }
+        internal static async Task<IEnumerable<CarReview>> GetReview(string carId)
+        {
+            List<CarReview> reviewsList = new List<CarReview>();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(Connection.CarListConnection))
+                {
+                    await conn.OpenAsync();
+                    string selectQuery = "SELECT * FROM CarList.dbo.CarReviews WHERE CarId = '" + carId + "'";
+
+                    using (SqlCommand cmd = new SqlCommand(selectQuery, conn))
+                    {
+                        cmd.CommandType = CommandType.Text;
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                CarReview review = new CarReview
+                                {
+                                    ReviewId = Convert.ToInt32(reader["ReviewId"]),
+                                    CarId = Convert.ToInt32(reader["CarId"]),
+                                    ReviewerName = reader["ReviewerName"].ToString(),
+                                    Rating = Convert.ToInt32(reader["Rating"]),
+                                    Comment = reader["Comment"].ToString(),
+                                    CreatedAt = DateTime.Parse(reader["CreatedAt"].ToString())
+                                };
+
+                                reviewsList.Add(review);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return reviewsList;
+        }
+
 
         #endregion
     }

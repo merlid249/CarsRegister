@@ -101,20 +101,54 @@ namespace CarsRegister.Controllers
                 return BadRequest("Something went wrong");
             }
         }
-
-
-
-        [HttpGet("getCar")]
-        public async Task<String> getCar(string id)
+        //Ok
+        [HttpGet("getYourCarById")]
+        public async Task<ActionResult<Car>> GetYourCarById([FromQuery] string yourId, [FromQuery] string carId)
         {
-            return "";
+            try
+            {
+                var car = await CarService.GetYourCarById(yourId, carId);
+                if (car != null)
+                {
+                    return Ok(car);
+                }
+                else
+                {
+                    return NotFound("No car found with Car ID " + carId + " for Owner ID " + yourId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Something went wrong");
+            }
         }
-        
+
+
+
+
         [HttpGet("getReview")]
-        public async Task<String> getReview(string id)
+        public async Task<ActionResult<IEnumerable<CarReview>>> GetReview([FromQuery] string carId)
         {
-            return "";
+            try
+            {
+                var reviews = await CarService.GetReview(carId);
+                if (reviews != null && reviews.Any())
+                {
+                    return Ok(reviews);
+                }
+                else
+                {
+                    return NotFound("No reviews found for Car ID " + carId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Something went wrong");
+            }
         }
+
         #endregion
 
         #region Customers
