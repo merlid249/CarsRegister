@@ -2,7 +2,7 @@
 {
     public class Car
     {
-        public string CarId { get; set; }
+        public string? CarId{ get; set; }
         public string OwnerId { get; set; } // Assuming OwnerId is an integer. Adjust the type if needed.
         public string Model { get; set; }
         public string Make { get; set; }
@@ -21,8 +21,8 @@
         public DateTime? LastMaintenanceDate { get; set; } // Nullable DateTime for maintenance
 
         // Navigation properties
-        public ICollection<CarFeature> CarFeatures { get; set; }
-        public ICollection<CarReview> CarReviews { get; set; }
+        public ICollection<CarFeature>? CarFeatures { get; set; }
+        public ICollection<CarReview>? CarReviews { get; set; }
 
     }
     public class CarFeature

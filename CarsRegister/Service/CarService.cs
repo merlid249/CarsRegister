@@ -261,5 +261,193 @@ namespace CarsRegister.Service
 
         }
         #endregion
+
+        #region Bussines
+        internal static async Task<IEnumerable<Car>> GetYourCars(string ownerId)
+        {
+            List<Car> carsList = new List<Car>();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(Connection.CarListConnection))
+                {
+                    await conn.OpenAsync();
+                    string selectQuery = "SELECT * FROM CarList.dbo.Cars WHERE OwnerId = '" + ownerId + "'";
+
+                    using (SqlCommand cmd = new SqlCommand(selectQuery, conn))
+                    {
+                        cmd.CommandType = CommandType.Text;
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                Car car = new Car
+                                {
+                                    CarId = reader["CarId"].ToString(),
+                                    OwnerId = reader["OwnerId"].ToString(),
+                                    Model = reader["Model"].ToString(),
+                                    Make = reader["Make"].ToString(),
+                                    Year = Convert.ToInt32(reader["Year"]),
+                                    Color = reader["Color"].ToString(),
+                                    Mileage = Convert.ToDecimal(reader["Mileage"]),
+                                    Transmission = reader["Transmission"].ToString(),
+                                    FuelType = reader["FuelType"].ToString(),
+                                    Status = reader["Status"].ToString(),
+                                    PricePerDay = Convert.ToDecimal(reader["PricePerDay"]),
+                                    Location = reader["Location"].ToString(),
+                                    ImageUrl = reader["ImageUrl"].ToString(),
+                                    Description = reader["Description"].ToString(),
+                                    CreatedAt = DateTime.Parse(reader["CreatedAt"].ToString()),
+                                    UpdatedAt = DateTime.Parse(reader["UpdatedAt"].ToString())
+                                };
+
+                                if (reader["LastMaintenanceDate"] != DBNull.Value)
+                                {
+                                    car.LastMaintenanceDate = DateTime.Parse(reader["LastMaintenanceDate"].ToString());
+                                }
+                                else
+                                {
+                                    car.LastMaintenanceDate = null;
+                                }
+
+                                carsList.Add(car);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return carsList;
+        }
+        internal static async Task<bool> UpdateCar(int id, Car updatedCar)
+        {
+            bool resp = false;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(Connection.CarListConnection))
+                {
+                    
+                    await conn.OpenAsync();
+                    string updateQuery = "UPDATE CarList.dbo.Cars SET " +
+                        "OwnerId = '" + updatedCar.OwnerId + "'," +
+                        "Model = '" + updatedCar.Model + "'," +
+                        "Make = '" + updatedCar.Make + "'," +
+                        "Year = '" + updatedCar.Year + "'," +
+                        "Color = '" + updatedCar.Color + "'," +
+                        "Mileage = '" + updatedCar.Mileage + "'," +
+                        "Transmission = '" + updatedCar.Transmission + "'," +
+                        "FuelType = '" + updatedCar.FuelType + "'," +
+                        "Status = '" + updatedCar.Status + "'," +
+                        "PricePerDay = '" + updatedCar.PricePerDay + "'," +
+                        "Location = '" + updatedCar.Location + "'," +
+                        "ImageUrl = '" + updatedCar.ImageUrl + "'," +
+                        "Description = '" + updatedCar.Description + "'," +
+                        "CreatedAt = '" + updatedCar.CreatedAt.ToString("yyyy-MM-dd") + "'," +
+                        "UpdatedAt = '" + DateTime.Now.ToString("yyyy-MM-dd") + "'," +
+                        "LastMaintenanceDate = " + (updatedCar.LastMaintenanceDate.HasValue ? "'" + updatedCar.LastMaintenanceDate.Value.ToString("yyyy-MM-dd") + "'" : "NULL") +
+                        " WHERE CarId = '" + id + "'";
+
+                    using (SqlCommand cmd = new SqlCommand(updateQuery, conn))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        int result = await cmd.ExecuteNonQueryAsync();
+                        if (result == 1)
+                        {
+                            resp = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return resp;
+        }
+        internal static async Task<bool> AddFeature(CarFeature carFeature)
+        {
+            bool resp = false;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(Connection.CarListConnection))
+                {
+                    await conn.OpenAsync();
+                    string insertQuery = "INSERT INTO CarList.dbo.CarFeatures " +
+                        "(CarId, FeatureName, Description) " +
+                        "VALUES (" +
+                          "'" + carFeature.CarId + "'," +
+                          "'" + carFeature.FeatureName + "'," +
+                          "'" + carFeature.Description + "'" +
+                        ")";
+
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, conn))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        int result = await cmd.ExecuteNonQueryAsync();
+                        if (result == 1)
+                        {
+                            resp = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return resp;
+        }
+        internal static async Task<bool> AddCar(Car car)
+        {
+            bool resp = false;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(Connection.CarListConnection))
+                {
+                    await conn.OpenAsync();
+                    string insertQuery = "INSERT INTO CarList.dbo.Cars " +
+                        "( OwnerId, Model, Make, Year, Color, Mileage, Transmission, FuelType, Status, PricePerDay, Location, ImageUrl, Description, CreatedAt, UpdatedAt, LastMaintenanceDate) " +
+                        "VALUES (" +
+                          "'" + car.OwnerId + "'," +
+                          "'" + car.Model + "'," +
+                          "'" + car.Make + "'," +
+                          "'" + car.Year + "'," +
+                          "'" + car.Color + "'," +
+                          "'" + car.Mileage + "'," +
+                          "'" + car.Transmission + "'," +
+                          "'" + car.FuelType + "'," +
+                          "'" + car.Status + "'," +
+                          "'" + car.PricePerDay + "'," +
+                          "'" + car.Location + "'," +
+                          "'" + car.ImageUrl + "'," +
+                          "'" + car.Description + "'," +
+                          "'" + car.CreatedAt.ToString("yyyy-MM-dd") + "'," +
+                          "'" + car.UpdatedAt.ToString("yyyy-MM-dd") + "'," +
+                          (car.LastMaintenanceDate.HasValue ? "'" + car.LastMaintenanceDate.Value.ToString("yyyy-MM-dd") + "'" : "NULL") +
+                        ")";
+
+
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, conn))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        int result = await cmd.ExecuteNonQueryAsync();
+                        if (result == 1)
+                        {
+                            resp = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return resp;
+        }
+
+        #endregion
     }
 }

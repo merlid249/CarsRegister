@@ -13,34 +13,103 @@ namespace CarsRegister.Controllers
     public class CarController : ControllerBase
     {
         #region Bussines
-
-        [HttpPost("addCar")]
-        public async Task<String> addCar()
-        {
-            return  "";
-        }
-        [HttpPut("updateCar")]
-        public async Task<String> updateCar()
-        {
-            return "";
-        }
+        //Ok
         [HttpGet("getYourCars")]
-        public async Task<String> getCars(string yourId)
+        public async Task<ActionResult<IEnumerable<Car>>> GetYourCars([FromQuery] string yourId)
         {
-            return "";
-
+            try
+            {
+                var cars = await CarService.GetYourCars(yourId);
+                if (cars != null && cars.Any())
+                {
+                    return Ok(cars);
+                }
+                else
+                {
+                    return NotFound("No cars found for Owner ID " + yourId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Something went wrong");
+            }
         }
+        //Ok
+        [HttpPut("updateCar/{id}")]
+        public async Task<ActionResult<string>> UpdateCar(int id, [FromBody] Car updatedCar)
+        {
+            try
+            {
+                bool response = await CarService.UpdateCar(id, updatedCar);
+                if (response)
+                {
+                    return "Car with ID " + id + " has been updated successfully!";
+                }
+                else
+                {
+                    return "Update failed for Car ID " + id + ". Something went wrong!";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Something went wrong");
+            }
+        }
+        //Ok
+        [HttpPost("addFeature")]
+        public async Task<ActionResult<string>> AddFeature([FromBody] CarFeature carFeature)
+        {
+            try
+            {
+                bool response = await CarService.AddFeature(carFeature);
+                if (response)
+                {
+                    return "Feature " + carFeature.FeatureName + " is added to Car ID " + carFeature.CarId + "!";
+                }
+                else
+                {
+                    return "Submit failed for Feature " + carFeature.FeatureName + ". Something went wrong!";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Something went wrong");
+            }
+        }
+        //Ok
+        [HttpPost("addCar")]
+        public async Task<ActionResult<string>> AddCar([FromBody] Car car)
+        {
+            try
+            {
+                bool response = await CarService.AddCar(car);
+                if (response)
+                {
+                    return "Car with Model " + car.Model + " is added!";
+                }
+                else
+                {
+                    return "Submit failed for Model " + car.Model + ". Something went wrong!";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Something went wrong");
+            }
+        }
+
+
+
         [HttpGet("getCar")]
         public async Task<String> getCar(string id)
         {
             return "";
         }
-        [HttpPost("addFeature")]
-        public async Task<String> addFeature(string id)
-        {
-            return "";
-
-        }
+        
         [HttpGet("getReview")]
         public async Task<String> getReview(string id)
         {
