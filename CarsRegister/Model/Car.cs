@@ -33,7 +33,7 @@
         public string Description { get; set; }
 
         // Navigation property
-        public Car Car { get; set; }
+        public Car? Car { get; set; }
     }
     public class CarReview
     {
@@ -42,7 +42,7 @@
         public string ReviewerName { get; set; }
         public int Rating { get; set; }
         public string Comment { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
          
     }
 

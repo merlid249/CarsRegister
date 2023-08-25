@@ -9,7 +9,7 @@ namespace CarsRegister.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-  //  [Authorize(AuthenticationSchemes = "CustomBearer")]
+    [Authorize(AuthenticationSchemes = "CustomBearer")]
     public class CarController : ControllerBase
     {
         #region Bussines

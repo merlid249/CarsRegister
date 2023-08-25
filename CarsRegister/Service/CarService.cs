@@ -222,6 +222,7 @@ namespace CarsRegister.Service
         internal static async Task<Boolean> addReview(CarReview carReview)
         {
             Boolean resp = false;
+            carReview.CreatedAt= DateTime.Now;
             try
             {
                 using (SqlConnection conn = new SqlConnection(Connection.CarListConnection))
