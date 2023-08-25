@@ -1,4 +1,11 @@
+using Microsoft.AspNetCore.Authentication;
+using RentalBooking.Tools;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddAuthentication("CustomBearer")
+   .AddScheme<AuthenticationSchemeOptions, CustomBearerAuthenticationHandler>("CustomBearer", null);
+
+
 
 // Add services to the container.
 
